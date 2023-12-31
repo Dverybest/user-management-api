@@ -33,5 +33,21 @@ namespace TestApi.Data
             IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             return dbConnection.Execute(sql);
         }
+        public bool ExecuteSqlWithParameters(string sql,List<SqlParameter>sqlParameters)
+        {
+            SqlCommand sqlCommand = new(sql);
+            foreach (var item in sqlParameters)
+            {
+                sqlCommand.Parameters.Add(item);
+            }
+            SqlConnection dbConnection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+            dbConnection.Open();
+
+            sqlCommand.Connection = dbConnection;
+            int rowsAffected = sqlCommand.ExecuteNonQuery();
+            dbConnection.Close();
+
+            return rowsAffected > 0;
+        }
     }
 }
